@@ -77,15 +77,15 @@ void randomFill(int start, int count)
 void printSystem(FILE* handle){
 	int i,j;
 	for (i=0;i<NUMENTITIES;i++){
-		fprintf(handle,"pos=(");
+		fprintf(handle,"Pos=(");
 		for (j=0;j<3;j++){
 			fprintf(handle,"%lf,",hPos[i][j]);
 		}
-		printf("),v=(");
+		printf("),V=(");
 		for (j=0;j<3;j++){
 			fprintf(handle,"%lf,",hVel[i][j]);
 		}
-		fprintf(handle,"),m=%lf\n",mass[i]);
+		fprintf(handle,"),M=%lf\n\n",mass[i]);
 	}
 }
 
