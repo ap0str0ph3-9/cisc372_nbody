@@ -15,6 +15,8 @@
 #define MAX_MASS 938e18  //approximate mass of ceres.
 #define DURATION (10*YEAR)
 #define INTERVAL DAY
+#define BLOCKS 2
+#define THREADS 32
 //End Configurable
 
 #define NUMENTITIES (NUMPLANETS+NUMASTEROIDS+1)
