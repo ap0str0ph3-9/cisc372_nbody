@@ -4,21 +4,18 @@
 #include "config.h"
 
 __global__ void rowRed(vector3* val, vector3* stor){
-  __shared__ vector3 ps[THREADS];
-  int t = threadIdx.x;
-  int i = blockIdx.x*blockDim.x+t;
-  ps[t] = (i<NUMENTITIES) ? val[i] : {0, 0, 0};
-  __syncthreads();
-  for (int s=blockDim.x/2; s>0; s>>=1){
-	if (t<s){
-		ps[t][0] += ps[t+s][0];
-		ps[t][1] += ps[t+s][1];
-		ps[t][2] += ps[t+s][2];
+  for (int offset=blockDim.x/2; offset>0; offset>>=1){
+	if (threadIdx.x<offset){
+	  for (int i=0;i<3;i++){
+		val[threadIdx.x][i]+=val[threadIdx.x+offset][i];
+	  }
 	}
 	__syncthreads();
-  }
-  if(t==0){
-	stor={ps[t][0], ps[t][1], ps[t][2]};
+	for (int i = 0; i<3; i++){
+		if (threadIdx.x==0){
+			stor[i]=val[0][i];
+		}
+	}
   }
 }
 
@@ -51,8 +48,8 @@ void compute(){
 	}
 	//sum up the rows of our matrix to get effect on each entity, then update velocity and position.
 	for (i=0;i<NUMENTITIES;i++){
-		vector3 *accel_sum={0,0,0};
-		rowRed<<<(NUMENTITIES+THREADS-1)/THREADS, THREADS>>>(accels[i], accel_sum);
+		vector3 accel_sum={0,0,0};
+		rowRed<<<(NUMENTITIES+THREADS-1)/THREADS, THREADS>>>(accels[i], *accel_sum);
 		//compute the new velocity based on the acceleration and time interval
 		//compute the new position based on the velocity and time interval
 		for (k=0;k<3;k++){
